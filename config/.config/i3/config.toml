@@ -1,0 +1,23 @@
+[[block]]
+block = "sound"
+max_vol = 100
+format = " VOL {$volume.eng(w:2) |Muted }"
+
+[[block]]
+block = "net"
+device = "enp5s0"
+format = " ETH Up "
+inactive_format = " ETH Down "
+missing_format = ""
+
+[[block]]
+block = "net"
+device = "wlan0"
+format = " WLAN Up $signal_strength "
+inactive_format = " WLAN Down "
+missing_format = ""
+
+[[block]]
+block = "time"
+format = " $timestamp.datetime(f:'%Y/%m/%d %H:%M', l:ja_JP) "
+interval = 5

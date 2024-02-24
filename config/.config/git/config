@@ -1,0 +1,15 @@
+[user]
+	name = Kazuyuki Miyagi
+	email = yuzu3886@gmail.com
+[core]
+	editor = vim
+[diff]
+	algorithm = histogram
+[init]
+	defaultBranch = main
+[pull]
+	ff = only
+[push]
+	default = current
+[ghq]
+	root = ~/src
