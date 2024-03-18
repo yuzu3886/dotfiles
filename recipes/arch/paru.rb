@@ -1,4 +1,4 @@
-version = 'v2.0.1'
+version = 'v2.0.3-1'
 archive = "paru-#{version}-x86_64.tar.zst"
 url = "https://github.com/Morganamilo/paru/releases/download/#{version}/#{archive}"
 

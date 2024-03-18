@@ -62,3 +62,21 @@ bindkey '^n' history-beginning-search-forward-end
 
 bindkey '^r' history-incremental-pattern-search-backward
 bindkey '^s' history-incremental-pattern-search-forward
+
+# abbr
+expand-alias-and-accept() {
+  zle _expand_alias
+  zle accept-line
+}
+
+expand-alias-and-insert() {
+  zle _expand_alias
+  zle self-insert
+}
+
+zle -N expand-alias-and-accept
+zle -N expand-alias-and-insert
+bindkey '^m' expand-alias-and-accept
+bindkey ' '  expand-alias-and-insert
+
+alias g='git'

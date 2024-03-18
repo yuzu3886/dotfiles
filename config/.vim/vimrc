@@ -5,6 +5,18 @@ augroup Vimrc
 augroup END
 command! -nargs=+ Autocmd autocmd Vimrc <args>
 
+def Keymap(modes: string, ...args: list<string>): void
+  var arg = join(args)
+  for mode in split(modes, '.\zs')
+    if stridx('nvsxoilct', mode) < 0
+      echoerr 'Invalid mode is detected:' mode
+      continue
+    endif
+    execute mode .. 'noremap' arg
+  endfor
+enddef
+command! -nargs=+ Keymap Keymap(<f-args>)
+
 $PACKPATH = expand('~/.cache/vim')
 
 set autoindent
@@ -21,7 +33,6 @@ set incsearch
 set laststatus=2
 set list
 set listchars=tab:^\ ,trail:-
-set noequalalways
 set noswapfile
 set packpath& packpath^=$PACKPATH
 set pumheight=10
@@ -36,6 +47,7 @@ set tabstop=2
 set termguicolors
 set ttimeout
 set ttimeoutlen=0
+set viminfofile=~/.cache/vim/viminfo
 set virtualedit=block
 set wildignorecase
 set wildmenu
@@ -58,11 +70,13 @@ minpac#add('Shougo/ddc-filter-sorter_rank')
 minpac#add('Shougo/ddc-source-around')
 minpac#add('Shougo/ddc-ui-native')
 minpac#add('Shougo/ddc.vim')
+minpac#add('lambdalisue/gin.vim')
 minpac#add('machakann/vim-sandwich')
 minpac#add('mattn/vim-molder')
 minpac#add('mattn/vim-molder-operations')
 minpac#add('rbtnn/vim-ambiwidth')
 minpac#add('skk-dev/dict', { type: 'opt' })
+minpac#add('thinca/vim-ambicmd')
 minpac#add('vim-denops/denops.vim')
 minpac#add('vim-skk/skkeleton')
 
@@ -74,12 +88,15 @@ endif
 
 filetype plugin indent on | syntax enable
 
+# ambicmd
+cnoremap <expr> <Space> ambicmd#expand("\<Space>")
+cnoremap <expr> <CR>    ambicmd#expand("\<CR>")
+
 # ambiwidth
 g:ambiwidth_cica_enabled = false
 
 # sandwich
-nnoremap s <Nop>
-xnoremap s <Nop>
+Keymap nx s <Nop>
 
 # ddc
 ddc#custom#patch_global({
@@ -117,6 +134,7 @@ def SkkeletonInit()
     globalDictionaries: [
       dict_dir .. '/SKK-JISYO.L',
     ],
+    userDictionary: '~/.local/state/skkeleton',
   })
   skkeleton#register_keymap('input', ';', 'henkanPoint')
   skkeleton#register_kanatable('rom', {
@@ -143,3 +161,9 @@ Autocmd User skkeleton-disable-post SkkeletonDisable()
 
 # colors
 colorscheme habamax
+
+# disable plugins
+g:loaded_netrw = 1
+g:loaded_netrwFileHandlers = 1
+g:loaded_netrwPlugin = 1
+g:loaded_netrwSettings = 1
