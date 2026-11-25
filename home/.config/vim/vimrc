@@ -1,0 +1,101 @@
+vim9script
+
+augroup MyGroup
+  autocmd!
+augroup END
+
+def Mkdir(dir: string)
+  const path = expand(dir)
+  if !isdirectory(path)
+    mkdir(path, 'p')
+  endif
+enddef
+
+Mkdir('~/.local/state/vim')
+
+&t_SI = "\<Esc>[6 q"
+&t_SR = "\<Esc>[4 q"
+&t_EI = "\<Esc>[2 q"
+
+set autocomplete
+set autocompletedelay=100
+set autoindent
+set background=dark
+set backspace=indent,eol,nostop
+set belloff=all
+set clipboard& clipboard^=unnamedplus
+set completeopt=menuone,noselect
+set completepopup=opacity:80,border:off
+set expandtab
+set ignorecase
+set laststatus=2
+set list
+set listchars=tab:>_,trail:-
+set noswapfile
+set packpath& packpath^=~/.local/share/vim
+set pumopt=height:10,maxwidth:80,opacity:80
+set shiftwidth=0
+set smartcase
+set softtabstop=-1
+set tabstop=2
+set termguicolors
+set ttimeout
+set ttimeoutlen=100
+set viminfofile=~/.local/state/vim/viminfo
+set virtualedit=block
+set wildignorecase
+
+cnoremap <C-n> <Down>
+cnoremap <C-p> <Up>
+
+filetype plugin indent on | syntax enable
+
+pack#Add('https://github.com/cocopon/iceberg.vim')
+pack#Add('https://github.com/h-east/lsp.vim')
+pack#Add('https://github.com/h-east/vim9ls')
+pack#Add('https://github.com/mattn/vim-molder')
+pack#Add('https://github.com/mattn/vim-molder-operations')
+
+if pack#Check()
+  autocmd MyGroup VimEnter * echohl WarningMsg | echomsg ':call pack#Install()' | echohl None
+  finish
+endif
+
+colorscheme iceberg
+
+# lsp
+g:lsp_server_list = [
+  {
+    filetypes: ['go'],
+    name: 'gopls',
+    cmd: ['gopls'],
+    rootPatterns: ['go.work', 'go.mod', '.git'],
+  },
+  {
+    filetypes: ['vim'],
+    name: 'vim9ls',
+    cmd: function('vim9ls#Command'),
+  },
+]
+
+g:lsp_client_config = {
+  hover_popup: { opt: 'border:round' },
+  signature_popup: { opt: 'border:round' },
+}
+
+def LspBuffer()
+  setlocal complete^=o
+  setlocal completeopt+=popup
+  setlocal signcolumn=yes
+  setlocal tagfunc=lsp#TagFunc
+  if &filetype != 'vim'
+    setlocal keywordprg=:LspHover
+  endif
+
+  nnoremap <buffer> gd <Cmd>LspDefinition<CR>
+enddef
+
+autocmd MyGroup User LspAttached LspBuffer()
+
+# d
+g:loaded_netrw = 1

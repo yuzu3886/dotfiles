@@ -1,0 +1,7 @@
+set guifont=SOROEMONO\ 12
+set guicursor=a:blinkon0
+set guioptions-=e
+set guioptions-=m
+set guioptions-=r
+set guioptions-=L
+set guioptions-=T
