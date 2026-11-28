@@ -13,7 +13,7 @@ if (( $+commands[rustup] )); then
       `which rustup` -nt "${XDG_DATA_HOME}/zsh/completions/_rustup" ]]; then
     rustup completions zsh > "${XDG_DATA_HOME}/zsh/completions/_rustup"
     rustup completions zsh cargo > "${XDG_DATA_HOME}/zsh/completions/_cargo"
-    rm "${XDG_CACHE_HOME}/zsh/zcompdump"
+    rm -f "${XDG_CACHE_HOME}/zsh/zcompdump"
   fi
 fi
 

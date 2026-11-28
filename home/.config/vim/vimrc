@@ -32,7 +32,6 @@ set laststatus=2
 set list
 set listchars=tab:>_,trail:-
 set noswapfile
-set packpath& packpath^=~/.local/share/vim
 set pumopt=height:10,maxwidth:80,opacity:80
 set shiftwidth=0
 set smartcase

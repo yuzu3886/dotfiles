@@ -1,22 +1,23 @@
 vim9script
 
-const RTP_IDX: number = ((): number => {
-  const saved = &runtimepath
-  set runtimepath&
-  const idx = &runtimepath->split(',')->index($VIMRUNTIME)
-  &runtimepath = saved
-  return idx
+const AFTER_IDX: number = ((): number => {
+  const rtp = &runtimepath->split(',')
+  return match(rtp, '[/\\]after') - len(rtp)
 })()
-const PACK_DIR: string = $'{&packpath->split(',')[0]}/pack/pack/opt'
+const PLUGIN_DIR: string = expand('~/.cache/vimp')
 const MAX_JOBS: number = 4
 
 var plugins: dict<dict<any>> = {}
 
-def InsertPath(paths: list<string>, path: string, idx: number)
-  if idx >= 0
-    insert(paths, path, idx)
-  else
-    add(paths, path)
+def InsertPath(plugin: dict<any>)
+  if isdirectory(plugin.dir)
+    final rtp = &runtimepath->split(',')
+    const dir = fnamemodify(plugin.dir, ':~')
+    insert(rtp, dir, index(rtp, $VIMRUNTIME))
+    if isdirectory($'{plugin.dir}/after')
+      insert(rtp, $'{dir}/after', AFTER_IDX)
+    endif
+    &runtimepath = join(rtp, ',')
   endif
 enddef
 
@@ -26,11 +27,9 @@ def AddRemotePlugin(src: string, opt: dict<any>)
   if get(plugin, 'name', '') == ''
     plugin.name = src->split('/')[-1]->substitute('\.git$', '', '')
   endif
-  plugin.dir = $'{PACK_DIR}/{plugin.name}'
+  plugin.dir = $'{PLUGIN_DIR}/{plugin.name}'
 
-  if isdirectory(plugin.dir)
-    execute 'packadd!' fnameescape(plugin.name)
-  endif
+  InsertPath(plugin)
 
   plugins[plugin.name] = plugin
 enddef
@@ -42,15 +41,7 @@ def AddLocalPlugin(src: string)
     dir: expand(src),
   }
 
-  if isdirectory(plugin.dir)
-    final rtp = &runtimepath->split(',')
-    const dir = fnamemodify(plugin.dir, ':~')
-    InsertPath(rtp, dir, RTP_IDX)
-    if isdirectory($'{plugin.dir}/after')
-      InsertPath(rtp, $'{dir}/after', match(rtp, '[/\\]after'))
-    endif
-    &runtimepath = join(rtp, ',')
-  endif
+  InsertPath(plugin)
 
   plugins[plugin.name] = plugin
 enddef
